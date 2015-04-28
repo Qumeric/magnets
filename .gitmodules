@@ -1,0 +1,3 @@
+[submodule "Lady"]
+	path = Lady
+	url = https://github.com/gvx/Lady.git

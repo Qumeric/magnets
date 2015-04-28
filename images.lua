@@ -1,0 +1,7 @@
+bgImg = love.graphics.newImage("images/bg.png")
+ballImg = love.graphics.newImage("images/ball.png")
+magnetImg1 = love.graphics.newImage("images/magnet1.png")
+magnetImg2 = love.graphics.newImage("images/magnet2.png")
+--platformImg = love.graphics.newImage("images/platform.png")
+--trapImg = love.graphics.newImage("images/trap.png")
+finishImg = love.graphics.newImage("images/finish.png")
