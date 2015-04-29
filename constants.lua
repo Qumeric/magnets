@@ -2,12 +2,17 @@ BALLP = -1
 GAME_STATE = "static"
 METER_SIZE = 64
 LEVELS = {"lvl1", "lvl2", "lvl3", "lvl4", "lvl5", "lvl6", "lvl7"}
-LEVELP = {{250, 180}, {360, 300}, {140, 200}, {140, 110}, {0, 0}}
-LEVELV = {{0, 3000}, {3600, 0}, {3600, 0}, {3600, 3600}, {0, 0}}
-LEVELX = {3, 3, 4, 4, 10, 10, 10}
-LEVEL =1
+LEVEL = 1
 GRAVITYX = 0
 GRAVITYY = 0
 VELOCITY = {0, 0}
 MAGNET_POWER = 0.8
 MAGNET_RADIUS = 33
+LASTLEVEL = 2
+EDITOR = false
+
+-- gamestates
+menu = {}
+editor = {}
+game = {}
+final = {}

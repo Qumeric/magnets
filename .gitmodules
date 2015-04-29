@@ -1,3 +1,6 @@
 [submodule "Lady"]
 	path = Lady
 	url = https://github.com/gvx/Lady.git
+[submodule "hump"]
+	path = hump
+	url = https://github.com/vrld/hump.git
