@@ -4,9 +4,7 @@ require "objects"
 require "constants"
 require "images"
 
---[[
---COMMON
---]]
+--[[COMMON]]--
 function love.load()
   Gamestate.registerEvents()
   Gamestate.switch(menu)
@@ -18,9 +16,7 @@ function love.load()
   loadgame()
 end
 
---[[
---MENU
---]]
+--[[MENU]]--
 function menu:draw()
     love.graphics.print("Press Enter to continue", 10, 10)
 end
@@ -31,17 +27,13 @@ function menu:keypressed(key, isrepeat)
     end
 end
 
---[[
---GAME
---]]
+--[[GAME]]--
 function game:enter()
     loadgame()
 end
 
 function game:update(dt)
-  if GAME_STATE == "dynamic" then
     world:update(dt)
-  end
   
   -- FIXME delete or handle ball
   for _, obj in pairs(objTable) do
@@ -63,7 +55,7 @@ function game:draw()
   end
   if ball then drawObject(ball) end
 
-  if GAME_STATE == "static" then
+  if not ball.body:isActive() then
     local x, y = ball.body:getPosition()
     love.graphics.line(x, y, x+velocity[1], y + velocity[2])
   end
@@ -79,10 +71,8 @@ function game:keypressed(key, isrepeat)
   elseif key == "r" then
     loadgame()
   elseif key == " " then
-    if GAME_STATE == "static" then
-      ball.body:setLinearVelocity(velocity[1], velocity[2])
-      GAME_STATE = "dynamic"
-    end
+    ball.body:setActive(true)
+    ball.body:setLinearVelocity(velocity[1], velocity[2])
   elseif love.keyboard.isDown("b") then
     for _, i in pairs(objTable) do
       if i.fixture:testPoint(love.mouse:getX(), love.mouse:getY()) and i.fixture:getUserData() == "magnet" then
@@ -98,7 +88,7 @@ function game:mousepressed(x, y, button)
       table.insert(objTable, createMagnet(world, love.mouse:getX(), love.mouse:getY(), MAGNET_POWER, MAGNET_RADIUS))
       cnt = cnt - 1
     end
-  elseif button == "m" and GAME_STATE == "static" then
+  elseif button == "m" and not ball.body:isActive() then
     for _, i in pairs(objTable) do
       if i.fixture:testPoint(love.mouse:getX(), love.mouse:getY()) then
         i.fixture:destroy()
@@ -116,18 +106,13 @@ function game:mousepressed(x, y, button)
   end
 end
 
---[[
---EDITOR
---]]
+--[[EDITOR]]--
 function editor:enter()
   loadgame()
-  current = createPlatform(world, 0, 0, 33, 33)
 end
 
 function editor:update(dt)
-  if GAME_STATE == "dynamic" then
-    world:update(dt)
-  end
+  world:update(dt)
   
   if current then
     local angle = current.body:getAngle()
@@ -207,7 +192,7 @@ end
 
 function editor:keypressed(key, isrepeat)
   if key == "return" then
-    lady.save_all(LEVELS[LEVEL], world, objTable, ball, velocity, {cnt})
+    lady.save_all("lvl" .. tostring(LEVEL), world, objTable, ball, velocity, {cnt})
     Gamestate.switch(game)
   elseif key == "z" then
     ball.body:setX(love.mouse.getX())
@@ -219,12 +204,8 @@ function editor:keypressed(key, isrepeat)
       end
     end
   elseif key == " " then
-    if GAME_STATE == "dynamic" then
-      GAME_STATE = "static"
-    else
-      ball.body:setLinearVelocity(velocity[1], velocity[2])
-      GAME_STATE = "dynamic"
-    end
+    ball.body:setActive(true)
+    ball.body:setLinearVelocity(velocity[1], velocity[2])
   elseif key >= "1" and key <= "9" then
     local x = love.mouse.getX()
     local y = love.mouse.getY()
@@ -262,9 +243,7 @@ function editor:mousepressed(x, y, button)
   end
 end
 
---[[
---FINAL
---]]
+--[[ FINAL]]--
 function final:draw()
   width, height = love.window.getMode( )
   love.graphics.setColor(255, 255, 255)
@@ -273,9 +252,7 @@ function final:draw()
   love.graphics.print("The End!", width/2-80, height/2-20)
 end
 
---[[
---OTHER
---]]
+--[[OTHER]]--
 function beginContact(a, b, coll)
     ad = a:getUserData()
     bd = b:getUserData()
@@ -319,7 +296,7 @@ function clear()
 end
 
 function loadgame()
-  world, objTable, ball, velocity, cnt = lady.load_all(LEVELS[LEVEL])
+  world, objTable, ball, velocity, cnt = lady.load_all("lvl" .. tostring(LEVEL))
   if not world then
     world = love.physics.newWorld(GRAVITYX, GRAVITYY*METER_SIZE, true)
     objTable = {}
@@ -330,7 +307,7 @@ function loadgame()
     cnt = cnt[1]
   end
 
-  GAME_STATE = "static"
-  
+  ball.body:setActive(false)
+
   world:setCallbacks(beginContact, endContact, preSolve, postSolve)
 end

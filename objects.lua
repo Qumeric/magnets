@@ -60,7 +60,8 @@ function drawObject(object)
       love.graphics.polygon("fill", object.body:getWorldPoints(object.shape:getPoints()))
       --love.graphics.draw(trapImg, object.body:getX()-object.sizeX/2, object.body:getY()-object.sizeY/2, object.body:getAngle(), object.sizeX/543, object.sizeY/154)
     elseif object.fixture:getUserData() == "finish" then
-      love.graphics.draw(finishImg, object.body:getX()-40, object.body:getY()-45)
+      local radius = object.shape:getRadius()
+      love.graphics.draw(finishImg, object.body:getX()-radius, object.body:getY()-radius, 0, radius*2/ballImg:getWidth(), radius*2/ballImg:getHeight())
       --love.graphics.draw()
     end
 end
