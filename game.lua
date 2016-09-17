@@ -54,6 +54,12 @@ function game:mousepressed(x, y, button)
       table.insert(objTable, createMagnet(world, love.mouse:getX(), love.mouse:getY(), MAGNET_POWER, MAGNET_RADIUS))
       cnt = cnt - 1
     end
+  elseif button == 2 then
+    for _, i in pairs(objTable) do
+      if i.fixture:testPoint(love.mouse:getX(), love.mouse:getY()) and i.fixture:getUserData() == "magnet" then
+        i.power = -i.power
+      end
+    end
   elseif button == 3 and not ball.body:isActive() then
     for _, i in pairs(objTable) do
       if i.fixture:testPoint(love.mouse:getX(), love.mouse:getY()) then
@@ -61,12 +67,6 @@ function game:mousepressed(x, y, button)
         i.body:destroy()
         cnt = cnt + 1
         table.remove(objTable, _)
-      end
-    end
-  elseif button == 2 then
-    for _, i in pairs(objTable) do
-      if i.fixture:testPoint(love.mouse:getX(), love.mouse:getY()) and i.fixture:getUserData() == "magnet" then
-        i.power = -i.power
       end
     end
   end

@@ -59,6 +59,7 @@ function editor:update(dt)
     end
   end
   
+  -- FIXME what is it I don't even
   if love.keyboard.isDown("s") then
     velocity[1] = (love.mouse:getX()-640)
     velocity[2] = (love.mouse:getY()-360)
@@ -92,15 +93,6 @@ function editor:keypressed(key, isrepeat)
   elseif key == "z" then
     ball.body:setX(love.mouse.getX())
     ball.body:setY(love.mouse.getY())
-  elseif love.keyboard.isDown("b") then
-    for _, i in pairs(objTable) do
-      if i.fixture:testPoint(love.mouse:getX(), love.mouse:getY()) and i.fixture:getUserData() == "magnet" then
-        i.power = -i.power
-      end
-    end
-  elseif key == "space" then
-    ball.body:setActive(true)
-    ball.body:setLinearVelocity(velocity[1], velocity[2])
   elseif key >= "1" and key <= "9" then
     local x = love.mouse.getX()
     local y = love.mouse.getY()
@@ -133,6 +125,12 @@ function editor:mousepressed(x, y, button)
     table.insert(objTable, current)
     print('New number of elements in objTable:', #objTable)
     current = nil
+  elseif button == 2 then
+    for _, i in pairs(objTable) do
+      if i.fixture:testPoint(love.mouse:getX(), love.mouse:getY()) and i.fixture:getUserData() == "magnet" then
+        i.power = -i.power
+      end
+    end
   elseif button == 3 then
     for _, i in pairs(objTable) do
       if i.fixture:testPoint(love.mouse:getX(), love.mouse:getY()) then
