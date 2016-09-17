@@ -1,6 +1,6 @@
 function love.conf(t)
     t.identity = "Magnets"
-    t.version = "0.9.2"
+    t.version = "0.10.1"
 
     t.window.title = "Magnets"
     t.window.width = 1280

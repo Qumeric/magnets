@@ -1,4 +1,3 @@
-lady = require 'lady/lady'
 Gamestate = require 'hump.gamestate'
 require "objects"
 require "constants"
@@ -13,7 +12,7 @@ function love.load()
 
   love.physics.setMeter(METER_SIZE)
 
-  loadgame()
+  newgame()
 end
 
 --[[MENU]]--
@@ -29,7 +28,7 @@ end
 
 --[[GAME]]--
 function game:enter()
-    loadgame()
+    newgame()
 end
 
 function game:update(dt)
@@ -66,29 +65,25 @@ function game:draw()
 end
 
 function game:keypressed(key, isrepeat)
+  print('game:keypressed', key, isrepeat)
   if key == "return" then
     Gamestate.switch(editor)
   elseif key == "r" then
-    loadgame()
-  elseif key == " " then
+    newgame()
+  elseif key == "space" and not ball.body:isActive() then
     ball.body:setActive(true)
     ball.body:setLinearVelocity(velocity[1], velocity[2])
-  elseif love.keyboard.isDown("b") then
-    for _, i in pairs(objTable) do
-      if i.fixture:testPoint(love.mouse:getX(), love.mouse:getY()) and i.fixture:getUserData() == "magnet" then
-        i.power = -i.power
-      end
-    end
   end
 end
 
 function game:mousepressed(x, y, button)
-  if button == "l" then
+  print('game:mousepressed', x, y, button)
+  if button == 1 then
     if cnt > 0 then
       table.insert(objTable, createMagnet(world, love.mouse:getX(), love.mouse:getY(), MAGNET_POWER, MAGNET_RADIUS))
       cnt = cnt - 1
     end
-  elseif button == "m" and not ball.body:isActive() then
+  elseif button == 3 and not ball.body:isActive() then
     for _, i in pairs(objTable) do
       if i.fixture:testPoint(love.mouse:getX(), love.mouse:getY()) then
         i.fixture:destroy()
@@ -97,7 +92,7 @@ function game:mousepressed(x, y, button)
         table.remove(objTable, _)
       end
     end
-  elseif button == "r" then
+  elseif button == 2 then
     for _, i in pairs(objTable) do
       if i.fixture:testPoint(love.mouse:getX(), love.mouse:getY()) and i.fixture:getUserData() == "magnet" then
         i.power = -i.power
@@ -108,7 +103,7 @@ end
 
 --[[EDITOR]]--
 function editor:enter()
-  loadgame()
+  newgame()
 end
 
 function editor:update(dt)
@@ -191,8 +186,9 @@ function editor:draw()
 end
 
 function editor:keypressed(key, isrepeat)
+  print('editor:keypressed', key, isrepeat)
   if key == "return" then
-    lady.save_all("lvl" .. tostring(LEVEL), world, objTable, ball, velocity, {cnt})
+    --lady.save_all("lvl" .. tostring(LEVEL), world, objTable, ball, velocity, {cnt})
     Gamestate.switch(game)
   elseif key == "z" then
     ball.body:setX(love.mouse.getX())
@@ -203,7 +199,7 @@ function editor:keypressed(key, isrepeat)
         i.power = -i.power
       end
     end
-  elseif key == " " then
+  elseif key == "space" then
     ball.body:setActive(true)
     ball.body:setLinearVelocity(velocity[1], velocity[2])
   elseif key >= "1" and key <= "9" then
@@ -229,10 +225,12 @@ function editor:keypressed(key, isrepeat)
 end
 
 function editor:mousepressed(x, y, button)
-  if button == "l" and current then
+  print('Editor: mousepressed', x, y, button)
+  if button == 1 and current then
     table.insert(objTable, current)
+    print('New number of elements in objTable:', #objTable)
     current = nil
-  elseif button == "m" then
+  elseif button == 3 then
     for _, i in pairs(objTable) do
       if i.fixture:testPoint(love.mouse:getX(), love.mouse:getY()) then
         i.fixture:destroy()
@@ -260,10 +258,10 @@ function beginContact(a, b, coll)
     if (ad == "ball" and bd == "finish") or (ad == "finish" and bd == "ball") then
       clear()
       LEVEL = LEVEL + 1
-      loadgame()
+      newgame()
     elseif (ad == "ball" and bd == "trap") or (ad == "trap" and bd == "ball") then
       clear()
-      loadgame()
+      newgame()
     end
 end
 
@@ -295,19 +293,12 @@ function clear()
   end
 end
 
-function loadgame()
-  world, objTable, ball, velocity, cnt = lady.load_all("lvl" .. tostring(LEVEL))
-  if not world then
-    world = love.physics.newWorld(GRAVITYX, GRAVITYY*METER_SIZE, true)
-    objTable = {}
-    velocity = {0, 0}
-    ball = createBall(world, 100, 100, {0, 0})
-    cnt = 10
-  else
-    cnt = cnt[1]
-  end
-
+function newgame()
+  world = love.physics.newWorld(GRAVITYX, GRAVITYY*METER_SIZE, true)
+  objTable = {}
+  velocity = {0, 0}
+  ball = createBall(world, 100, 100, {0, 0})
+  cnt = 10
   ball.body:setActive(false)
-
   world:setCallbacks(beginContact, endContact, preSolve, postSolve)
-end
+end 
