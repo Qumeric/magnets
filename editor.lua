@@ -1,4 +1,6 @@
-function editor:enter()
+binser = require "binser/binser"
+
+function editor:enter() current_level = 1
   newgame()
 end
 
@@ -70,6 +72,7 @@ function editor:draw()
   love.graphics.draw(bgImg, 0, 0)
   love.graphics.print(cnt, 50, 50)
   love.graphics.print("Editor", 600, 10)
+  love.graphics.print("Level: " .. tostring(current_level), 600, 40)
   for _, i in pairs(objTable) do
     drawObject(i)
   end
@@ -84,7 +87,7 @@ end
 function editor:keypressed(key, isrepeat)
   print('editor:keypressed', key, isrepeat)
   if key == "return" then
-    --lady.save_all("lvl" .. tostring(LEVEL), world, objTable, ball, velocity, {cnt})
+    local level_info = binser.serialize(current_level, cnt)
     Gamestate.switch(game)
   elseif key == "z" then
     ball.body:setX(love.mouse.getX())
@@ -117,6 +120,10 @@ function editor:keypressed(key, isrepeat)
     cnt = cnt + 1
   elseif key == "kp-" then
     cnt = math.max(0, cnt - 1)
+  elseif key == "[" then
+    current_level = math.max(1, current_level-1)
+  elseif key == "]" then
+    current_level = current_level + 1
   end
 end
 

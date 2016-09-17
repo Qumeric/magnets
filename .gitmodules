@@ -1,3 +1,6 @@
 [submodule "hump"]
 	path = hump
 	url = https://github.com/vrld/hump.git
+[submodule "binser"]
+	path = binser
+	url = https://github.com/bakpakin/binser.git
